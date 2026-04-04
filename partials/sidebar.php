@@ -107,9 +107,9 @@ $user = query("SELECT * FROM users WHERE id = $id")[0];
                 <?php endif; ?>
                 <li class="nav-header">LAPORAN HASIL</li>
                 <li class="nav-item">
-                    <a href="../hasil_fuzzy" class="nav-link">
+                    <a href="<?= base_url('laporan_hasil/hasil_analisa') ?>" class="nav-link">
                         <i class="nav-icon fas fa-file-invoice"></i>
-                        <p>Laporan Hasil Analisa</p>
+                        <p>Hasil Analisa</p>
                     </a>
                 </li>
                 <li class="nav-header">SETTINGS</li>

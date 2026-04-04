@@ -21,6 +21,9 @@ RewriteRule ^master_data/penilaian/delete_nilai/([0-9]+)$ master_data/penilaian/
 RewriteRule ^master_data/variabel/edit_variabel/([0-9]+)$ master_data/variabel/edit_variabel.php?id_variabel=$1 [L,QSA]
 RewriteRule ^master_data/variabel/delete_variabel/([0-9]+)$ master_data/variabel/delete_variabel.php?id_variabel=$1 [L,QSA]
 RewriteRule ^fuzzy_sugeno/himpunan_fuzzy/edit/([0-9]+)$ fuzzy_sugeno/himpunan_fuzzy/edit.php?id_set=$1 [L,QSA]
+RewriteRule ^fuzzy_sugeno/himpunan_fuzzy/delete/([0-9]+)$ fuzzy_sugeno/himpunan_fuzzy/delete.php?id_set=$1 [L,QSA]
+RewriteRule ^fuzzy_sugeno/rule_fuzzy/edit/([0-9]+)$ fuzzy_sugeno/rule_fuzzy/edit.php?id_rule=$1 [L,QSA]
+RewriteRule ^fuzzy_sugeno/rule_fuzzy/delete/([0-9]+)$ fuzzy_sugeno/rule_fuzzy/delete.php?id_rule=$1 [L,QSA]
 
 # ======================================
 # Remove .php extension

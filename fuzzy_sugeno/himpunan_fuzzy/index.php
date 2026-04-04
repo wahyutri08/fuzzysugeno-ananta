@@ -272,10 +272,10 @@ require_once '../../partials/header.php';
                 if (result.isConfirmed) {
 
                     $.ajax({
-                        url: '<?= base_url('master_data/variabel/delete_variabel') ?>',
+                        url: '<?= base_url('fuzzy_sugeno/himpunan_fuzzy/delete') ?>',
                         type: 'POST',
                         data: {
-                            id_variabel: id
+                            id_set: id
                         },
 
                         beforeSend: function() {

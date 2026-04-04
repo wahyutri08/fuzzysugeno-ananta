@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // validasi ID
-if (!isset($_POST['id_set']) || !is_numeric($_POST['id_set'])) {
+if (!isset($_POST['id_rule']) || !is_numeric($_POST['id_rule'])) {
     http_response_code(400);
     // echo json_encode([
     //     "status" => "error",
@@ -39,10 +39,10 @@ if (!isset($_POST['id_set']) || !is_numeric($_POST['id_set'])) {
     exit;
 }
 
-$id_set = (int) $_POST['id_set'];
+$id_rule = (int) $_POST['id_rule'];
 
 // cek data ada
-$cek = query("SELECT id_set FROM fuzzy_set WHERE id_set = $id_set");
+$cek = query("SELECT id_rule FROM rule_fuzzy WHERE id_rule = $id_rule");
 if (empty($cek)) {
     http_response_code(404);
     // echo json_encode([
@@ -53,7 +53,7 @@ if (empty($cek)) {
 }
 
 // proses delete
-if (deleteFuzzySet($id_set) > 0) {
+if (deleteRuleFuzzy($id_rule) > 0) {
     echo json_encode([
         "status" => "success",
         "message" => "Data Successfully Deleted"

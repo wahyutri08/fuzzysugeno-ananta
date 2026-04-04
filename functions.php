@@ -1086,6 +1086,269 @@ function updateFuzzy($data)
     return mysqli_affected_rows($db);
 }
 
+function deleteFuzzySet($id_set)
+{
+    global $db;
+    mysqli_query($db, "DELETE FROM fuzzy_set WHERE id_set = $id_set");
+    return mysqli_affected_rows($db);
+}
+
+
+function addRules($data)
+{
+    global $db;
+    $uts = mysqli_real_escape_string($db, $data['uts']);
+    $uas = mysqli_real_escape_string($db, $data['uas']);
+    $keaktifan = mysqli_real_escape_string($db, $data['keaktifan']);
+    $output = mysqli_real_escape_string($db, $data['output']);
+    $keterangan = mysqli_real_escape_string($db, $data['keterangan']);
+
+    // Cek apakah data yang sama sudah ada di database
+    $checkQuery = "SELECT COUNT(*) as count FROM rule_fuzzy 
+                   WHERE uts = '$uts' 
+                   AND uas = '$uas' 
+                   AND keaktifan = '$keaktifan' 
+                   AND output = '$output'
+                   AND keterangan = '$keterangan'";
+
+    $result = mysqli_query($db, $checkQuery);
+    $row = mysqli_fetch_assoc($result);
+
+    // Jika data sudah ada, return 0 atau pesan error
+    if ($row['count'] > 0) {
+        return 0;
+    } else {
+        $query = "INSERT INTO rule_fuzzy (uts, uas, keaktifan, output, keterangan) 
+                  VALUES ('$uts', 
+                          '$uas', 
+                          '$keaktifan', 
+                          '$output', 
+                          '$keterangan')";
+
+        mysqli_query($db, $query);
+        return mysqli_affected_rows($db);
+    }
+}
+
+function editRule($data)
+{
+    global $db;
+    $id_rule = $data["id_rule"];
+    $uts = mysqli_real_escape_string($db, $data['uts']);
+    $uas = mysqli_real_escape_string($db, $data['uas']);
+    $keaktifan = mysqli_real_escape_string($db, $data['keaktifan']);
+    $output = mysqli_real_escape_string($db, $data['output']);
+    $keterangan = mysqli_real_escape_string($db, $data['keterangan']);
+
+    // Cek apakah data yang sama sudah ada di database
+    $checkQuery = "SELECT COUNT(*) as count FROM rule_fuzzy 
+                   WHERE uts = '$uts' 
+                   AND uas = '$uas' 
+                   AND keaktifan = '$keaktifan' 
+                   AND output = '$output'
+                   AND keterangan = '$keterangan'";
+
+    $result = mysqli_query($db, $checkQuery);
+    $row = mysqli_fetch_assoc($result);
+
+    // Jika data sudah ada, return 0 atau pesan error
+    if ($row['count'] > 0) {
+        return 0;
+    } else {
+        $query = "UPDATE rule_fuzzy SET uts = '$uts',
+                                        uas = '$uas',
+                                        keaktifan = '$keaktifan',
+                                        output = '$output',
+                                        keterangan = '$keterangan' WHERE id_rule = $id_rule ";
+
+        mysqli_query($db, $query);
+        return mysqli_affected_rows($db);
+    }
+}
+
+function deleteRuleFuzzy($id_rule)
+{
+    global $db;
+    mysqli_query($db, "DELETE FROM rule_fuzzy WHERE id_rule = $id_rule");
+    return mysqli_affected_rows($db);
+}
+
+
+
+// =====================
+// 🔥 FUNCTION SEGITIGA (DI LUAR)
+// =====================
+
+// =====================
+// 🔥 FUNGSI SEGITIGA (AMAN)
+// =====================
+function segitiga($x, $a, $b, $c)
+{
+    // luar range
+    if ($x < $a || $x > $c) return 0;
+
+    // handle puncak
+    if ($x == $b) return 1;
+
+    // handle sisi naik
+    if ($x > $a && $x < $b) {
+        return ($b - $a) != 0 ? ($x - $a) / ($b - $a) : 0;
+    }
+
+    // handle sisi turun
+    if ($x > $b && $x < $c) {
+        return ($c - $b) != 0 ? ($c - $x) / ($c - $b) : 0;
+    }
+
+    return 0;
+}
+
+
+// =====================
+// 🔥 FUNCTION UTAMA
+// =====================
+function hitungFuzzySugeno($db, $nilai_uts, $nilai_uas, $keaktifan, $id_siswa, $user_id)
+{
+    // =====================
+    // 🔥 REPLACE MODE
+    // =====================
+    $cek = query("SELECT * FROM hasil WHERE id_siswa = $id_siswa");
+
+    if (!empty($cek)) {
+        $id_hasil_lama = $cek[0]['id_hasil'];
+
+        mysqli_query($db, "DELETE FROM hasil_detail WHERE id_hasil = $id_hasil_lama");
+        mysqli_query($db, "DELETE FROM hasil WHERE id_hasil = $id_hasil_lama");
+    }
+
+    // =====================
+    // 1. AMBIL FUZZY SET
+    // =====================
+    $fuzzy = query("SELECT * FROM fuzzy_set");
+
+    $sets = [];
+
+    foreach ($fuzzy as $f) {
+        $sets[$f['id_variabel']][$f['nama_set']] = $f;
+    }
+
+    // =====================
+    // VALIDASI
+    // =====================
+    if (!isset($sets[1]) || !isset($sets[2]) || !isset($sets[3])) {
+        return [
+            'hasil' => 0,
+            'keterangan' => 'Data tidak lengkap',
+            'id_hasil' => 0
+        ];
+    }
+
+    // =====================
+    // 2. HITUNG μ
+    // =====================
+    $miu_uts = [];
+    $miu_uas = [];
+    $miu_keaktifan = [];
+
+    foreach ($sets[1] as $nama => $s) {
+        $miu_uts[$nama] = segitiga($nilai_uts, $s['a'], $s['b'], $s['c']);
+    }
+
+    foreach ($sets[2] as $nama => $s) {
+        $miu_uas[$nama] = segitiga($nilai_uas, $s['a'], $s['b'], $s['c']);
+    }
+
+    foreach ($sets[3] as $nama => $s) {
+        $miu_keaktifan[$nama] = segitiga($keaktifan, $s['a'], $s['b'], $s['c']);
+    }
+
+    // =====================
+    // 3. AMBIL RULE
+    // =====================
+    $rules = query("SELECT * FROM rule_fuzzy");
+
+    $total_alpha = 0;
+    $total_alpha_z = 0;
+    $detail = [];
+
+    // =====================
+    // 4. HITUNG α DAN z
+    // =====================
+    foreach ($rules as $r) {
+
+        // normalisasi nama biar aman
+        $uts = ucfirst(strtolower($r['uts']));
+        $uas = ucfirst(strtolower($r['uas']));
+        $aktif = ucfirst(strtolower($r['keaktifan']));
+
+        $alpha = min(
+            $miu_uts[$uts] ?? 0,
+            $miu_uas[$uas] ?? 0,
+            $miu_keaktifan[$aktif] ?? 0
+        );
+
+        if ($alpha > 0) {
+
+            $z = (float)$r['output'];
+
+            $total_alpha += $alpha;
+            $total_alpha_z += ($alpha * $z);
+
+            $detail[] = [
+                'id_rule' => $r['id_rule'],
+                'alpha' => $alpha,
+                'z' => $z
+            ];
+        }
+    }
+
+    // =====================
+    // 5. DEFUZZIFIKASI
+    // =====================
+    $hasil = ($total_alpha != 0) ? ($total_alpha_z / $total_alpha) : 0;
+
+    $hasil = round($hasil, 2);
+
+    // =====================
+    // 🔥 6. KETERANGAN (FIX)
+    // =====================
+    if ($hasil >= 80) {
+        $keterangan = 'Layak';
+    } elseif ($hasil >= 70) {
+        $keterangan = 'Dipertimbangkan';
+    } else {
+        $keterangan = 'Tidak Layak';
+    }
+
+    // =====================
+    // 7. SIMPAN HASIL
+    // =====================
+    mysqli_query($db, "
+        INSERT INTO hasil (id_siswa, user_id, nilai_fuzzy, keterangan)
+        VALUES ('$id_siswa', '$user_id', '$hasil', '$keterangan')
+    ");
+
+    $id_hasil = mysqli_insert_id($db);
+
+    // =====================
+    // 8. SIMPAN DETAIL
+    // =====================
+    foreach ($detail as $d) {
+        mysqli_query($db, "
+            INSERT INTO hasil_detail (id_hasil, id_rule, alpha, z)
+            VALUES ('$id_hasil', '{$d['id_rule']}', '{$d['alpha']}', '{$d['z']}')
+        ");
+    }
+
+    // =====================
+    // 9. RETURN
+    // =====================
+    return [
+        'hasil' => $hasil,
+        'keterangan' => $keterangan,
+        'id_hasil' => $id_hasil
+    ];
+}
 function deleteProductName($id_product)
 {
     global $db;

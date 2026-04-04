@@ -6,22 +6,18 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] !== true) {
     exit;
 }
 
+if ($_SESSION['role'] !== 'Admin') {
+    http_response_code(404);
+    exit;
+}
+
+$query = query("SELECT * FROM rule_fuzzy");
+
 $user_id = $_SESSION['id'];
 $role = $_SESSION['role'];
 
-if ($role == 'Admin') {
-    $siswa = query("SELECT siswa.*, penilaian.nilai_uts, penilaian.nilai_uas, penilaian.keaktifan
-                    FROM siswa
-                    LEFT JOIN penilaian 
-                    ON siswa.id_siswa = penilaian.id_siswa");
-} elseif ($role == 'Staff') {
-    $siswa = query("SELECT siswa.*, penilaian.nilai_uts, penilaian.nilai_uas, penilaian.keaktifan
-                    FROM siswa
-                    LEFT JOIN penilaian ON siswa.id_siswa = penilaian.id_siswa
-                    WHERE siswa.user_id = $user_id");
-}
 
-$title = "Penilaian Siswa";
+$title = "Rule Fuzzy";
 require_once '../../partials/header.php';
 
 ?>
@@ -50,7 +46,7 @@ require_once '../../partials/header.php';
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="../dashboard">Home</a></li>
                                 <li class="breadcrumb-item">Menu</li>
-                                <li class="breadcrumb-item">Master Data</li>
+                                <li class="breadcrumb-item">Fuzzy Sugeno</li>
                                 <li class="breadcrumb-item"><?= $title;  ?></li>
                             </ol>
                         </div><!-- /.col -->
@@ -64,12 +60,12 @@ require_once '../../partials/header.php';
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col">
-                            <div class="card card-outline card-success">
+                            <div class="card card-outline card-warning">
                                 <div class="card-header text-left">
-                                    <button id="btnProsesFuzzy" class="btn btn-sm bg-gradient-success mr-2 disabled">
-                                        <i class="fas fa-cog"></i> Proses Fuzzy
-                                    </button>
-                                    <a href="#" id="btnDelete" class="btn btn-sm bg-gradient-warning disabled">
+                                    <a href="<?= base_url('fuzzy_sugeno/rule_fuzzy/tambah') ?>" class="btn btn-sm bg-gradient-warning mr-2">
+                                        <i class="fas fa-plus"> </i>&nbsp; Tambah
+                                    </a>
+                                    <a href="#" id="btnDelete" class="btn btn-sm bg-gradient-danger disabled">
                                         <i class="fas fa-trash"></i> Delete
                                     </a>
                                 </div>
@@ -85,45 +81,46 @@ require_once '../../partials/header.php';
                                                         <label for="checkAll" class="custom-control-label"></label>
                                                     </div>
                                                 </th>
-                                                <th class="text-center">NIS</th>
-                                                <th class="text-center">Nama Siswa</th>
-                                                <th class="text-center">Nilai UTS</th>
-                                                <th class="text-center">Nilai UAS</th>
+                                                <th class="text-center">No</th>
+                                                <th class="text-center">UTS</th>
+                                                <th class="text-center">UAS</th>
                                                 <th class="text-center">Keaktifan</th>
+                                                <th class="text-center">Output</th>
+                                                <th class="text-center">Keterangan</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($siswa as $i => $row) : ?>
+                                            <?php foreach ($query as $i => $row) : ?>
                                                 <tr>
                                                     <td class="text-center" style="width: 8px;">
                                                         <div class="custom-control custom-checkbox">
                                                             <input class="custom-control-input custom-control-input-danger checkbox-item"
                                                                 type="checkbox"
-                                                                id="check<?= htmlspecialchars($row['id_siswa']); ?>"
-                                                                value="<?= htmlspecialchars($row['id_siswa']); ?>">
-                                                            <label for="check<?= htmlspecialchars($row['id_siswa']); ?>" class="custom-control-label"></label>
+                                                                id="check<?= htmlspecialchars($row['id_rule']); ?>"
+                                                                value="<?= htmlspecialchars($row['id_rule']); ?>">
+                                                            <label for="check<?= htmlspecialchars($row['id_rule']); ?>" class="custom-control-label"></label>
                                                         </div>
                                                     </td>
-                                                    <td class="text-center"><?= htmlspecialchars($row['nis'] ?? '-') ?></td>
-                                                    <td class="text-center"><?= htmlspecialchars($row['nama_siswa'] ?? '-') ?></td>
-                                                    <td class="text-center"><?= htmlspecialchars($row['nilai_uts'] ?? '-') ?></td>
-                                                    <td class="text-center"><?= htmlspecialchars($row['nilai_uas'] ?? '-') ?></td>
-                                                    <td class="text-center"><?= htmlspecialchars($row['keaktifan'] ?? '-') ?></td>
+                                                    <td class="text-center"><?= $i + 1; ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['uts']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['uas']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['keaktifan']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['output']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['keterangan']); ?></td>
                                                     <td class="text-center">
                                                         <div class="dropdown">
                                                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
                                                                 Action
                                                             </button>
                                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                                <li><a class="dropdown-item" href="<?= base_url('master_data/penilaian/edit_nilai/' . $row['id_siswa']) ?>"><i class="fas fa-edit"></i> Edit</a></li>
+                                                                <li><a class="dropdown-item" href="<?= base_url('fuzzy_sugeno/rule_fuzzy/edit/' . $row['id_rule']) ?>"><i class="fas fa-edit"></i> Edit</a></li>
                                                                 <li><a href="#"
                                                                         class="dropdown-item tombol-hapus"
-                                                                        data-id="<?= $row['id_siswa']; ?>">
+                                                                        data-id="<?= $row['id_rule']; ?>">
                                                                         <i class="far fa-trash-alt"></i> Delete
                                                                     </a>
                                                                 </li>
-                                                            </ul>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -164,8 +161,8 @@ require_once '../../partials/header.php';
                 "ordering": true,
                 "info": true,
                 "autoWidth": true,
-                "responsive": false,
-                "buttons": ["excel", "print", "colvis"]
+                "responsive": false
+                // "buttons": ["excel", "print", "colvis"]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>
@@ -189,14 +186,10 @@ require_once '../../partials/header.php';
 
             // 🔥 TOGGLE CLASS DISABLED
             function toggleDeleteButton() {
-                let checked = $('.checkbox-item:checked').length > 0;
-
-                if (checked) {
+                if ($('.checkbox-item:checked').length > 0) {
                     $('#btnDelete').removeClass('disabled');
-                    $('#btnProsesFuzzy').removeClass('disabled');
                 } else {
                     $('#btnDelete').addClass('disabled');
-                    $('#btnProsesFuzzy').addClass('disabled');
                 }
             }
 
@@ -261,74 +254,6 @@ require_once '../../partials/header.php';
         });
     </script>
     <script>
-        $('#btnProsesFuzzy').on('click', function(e) {
-            e.preventDefault();
-
-            if ($(this).hasClass('disabled')) return;
-
-            let ids = [];
-            $('.checkbox-item:checked').each(function() {
-                ids.push($(this).val());
-            });
-
-            Swal.fire({
-                title: 'Proses Fuzzy?',
-                text: ids.length + ' data akan diproses',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Proses!'
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-
-                    // 🔥 LOADING
-                    Swal.fire({
-                        title: 'Memproses...',
-                        text: 'Sedang menghitung fuzzy',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    $.ajax({
-                        url: '<?= base_url('master_data/penilaian/proses_fuzzy_bulk') ?>',
-                        type: 'POST',
-                        data: {
-                            ids: ids
-                        },
-                        dataType: 'json',
-
-                        success: function(res) {
-
-                            if (res.status === 'success') {
-
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: res.message
-                                }).then(() => {
-                                    window.location.href = '<?= base_url('laporan_hasil/hasil_analisa') ?>';
-                                });
-
-                            } else {
-                                Swal.fire('Error', res.message, 'error');
-                            }
-
-                        },
-
-                        error: function(xhr) {
-                            console.log(xhr.responseText);
-                            Swal.fire('Error', 'Server Error', 'error');
-                        }
-                    });
-
-                }
-
-            });
-        });
-    </script>
-    <script>
         $(document).on('click', '.tombol-hapus', function(e) {
             e.preventDefault();
 
@@ -344,10 +269,10 @@ require_once '../../partials/header.php';
                 if (result.isConfirmed) {
 
                     $.ajax({
-                        url: '<?= base_url('master_data/penilaian/delete_nilai') ?>',
+                        url: '<?= base_url('fuzzy_sugeno/rule_fuzzy/delete') ?>',
                         type: 'POST',
                         data: {
-                            id_siswa: id
+                            id_rule: id
                         },
 
                         beforeSend: function() {
