@@ -46,7 +46,7 @@ require_once '../../partials/header.php';
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="../dashboard">Home</a></li>
                                 <li class="breadcrumb-item">Menu</li>
-                                <li class="breadcrumb-item">Master Data</li>
+                                <li class="breadcrumb-item">Fuzzy Sugeno</li>
                                 <li class="breadcrumb-item"><?= $title;  ?></li>
                             </ol>
                         </div><!-- /.col -->
@@ -62,8 +62,8 @@ require_once '../../partials/header.php';
                         <div class="col">
                             <div class="card card-outline card-primary">
                                 <div class="card-header text-left">
-                                    <a href="<?= base_url('master_data/variabel/tambah_variabel') ?>" class="btn btn-sm bg-gradient-primary mr-2">
-                                        <i class="fas fa-plus"> </i>&nbsp; Tambah Variabe
+                                    <a href="<?= base_url('fuzzy_sugeno/variabel/tambah_variabel') ?>" class="btn btn-sm bg-gradient-primary mr-2">
+                                        <i class="fas fa-plus"> </i>&nbsp; Tambah Variabel
                                     </a>
                                     <a href="#" id="btnDelete" class="btn btn-sm bg-gradient-warning disabled">
                                         <i class="fas fa-trash"></i> Delete
@@ -106,7 +106,7 @@ require_once '../../partials/header.php';
                                                                 Action
                                                             </button>
                                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                                <li><a class="dropdown-item" href="<?= base_url('master_data/variabel/edit_variabel/' . $row['id_variabel']) ?>"><i class="fas fa-edit"></i> Edit</a></li>
+                                                                <li><a class="dropdown-item" href="<?= base_url('fuzzy_sugeno/variabel/edit_variabel/' . $row['id_variabel']) ?>"><i class="fas fa-edit"></i> Edit</a></li>
                                                                 <li><a href="#"
                                                                         class="dropdown-item tombol-hapus"
                                                                         data-id="<?= $row['id_variabel']; ?>">

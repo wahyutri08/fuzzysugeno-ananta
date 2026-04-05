@@ -70,14 +70,6 @@ $user = query("SELECT * FROM users WHERE id = $id")[0];
                                 <p>Penilaian</p>
                             </a>
                         </li>
-                        <?php if ($role === 'Admin') : ?>
-                            <li class="nav-item">
-                                <a href="<?= base_url('master_data/variabel') ?>" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Variabel</p>
-                                </a>
-                            </li>
-                        <?php endif; ?>
                     </ul>
                 </li>
                 <?php if ($role === 'Admin') : ?>
@@ -90,6 +82,12 @@ $user = query("SELECT * FROM users WHERE id = $id")[0];
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?= base_url('fuzzy_sugeno/variabel') ?>" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Variabel</p>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="<?= base_url('fuzzy_sugeno/himpunan_fuzzy') ?>" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>

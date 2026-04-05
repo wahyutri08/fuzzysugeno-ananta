@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { selector: 'a[href*="variabel"]', path: 'variabel' },
         { selector: 'a[href*="himpunan_fuzzy"]', path: 'himpunan_fuzzy' },
          { selector: 'a[href*="rule_fuzzy"]', path: 'rule_fuzzy' },
-        { selector: 'a[href*="product_name"]', path: 'product_name' },
+        { selector: 'a[href*="hasil_analisa"]', path: 'hasil_analisa' },
         { selector: 'a[href*="color_type"]', path: 'color_type' },
         { selector: 'a[href*="member_bank"]', path: 'member_bank' },
         { selector: 'a[href*="profile"]', path: 'profile' },

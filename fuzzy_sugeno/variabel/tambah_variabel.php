@@ -1,53 +1,38 @@
 <?php
 session_start();
-require_once("../../auth_check.php");
+include_once("../../auth_check.php");
 if (!isset($_SESSION["login"]) || $_SESSION["login"] !== true) {
     header("Location: ../../login");
     exit;
 }
 
-if ($_SESSION['role'] !== 'Admin') {
-    http_response_code(404);
-    exit;
+$query = mysqli_query($db, "SELECT MAX(id_variabel) AS max_id FROM variabel");
+$data = mysqli_fetch_assoc($query);
+$next_id = $data['max_id'] + 1;
+if (!$next_id) {
+    $next_id = 1; // jika belum ada data sama sekali
 }
 
-$user_id = $_SESSION['id'];
-$role    = $_SESSION['role'];
 
-$id_variabel = (int)($_GET['id_variabel'] ?? 0);
-if ($id_variabel <= 0) {
-    http_response_code(404);
-    exit;
-}
-
-if (isset($_GET["id_variabel"]) && is_numeric($_GET["id_variabel"])) {
-    $id_variabel = $_GET["id_variabel"];
-} else {
-    http_response_code(404);
-    exit;
-}
-
-$variabel = query("SELECT * FROM variabel WHERE id_variabel = $id_variabel");
-
-if (empty($variabel)) {
-    http_response_code(404);
-    exit;
-}
-$variabel = $variabel[0];
+$id = $_SESSION["id"];
+$role = $_SESSION['role'];
+// $variabel = query("SELECT * FROM variabel WHERE id_variabel = $id")[0];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $result = editVariabel($_POST);
+    $result = addVariabel($_POST);
     if ($result > 0) {
         echo json_encode(["status" => "success", "message" => "Data Added Successfully"]);
     } elseif ($result == -1) {
         echo json_encode(["status" => "error", "message" => "Variabel Name Already Exists"]);
+    } elseif ($result == -2) {
+        echo json_encode(["status" => "error", "message" => "ID Variabel Already Exists"]);
     } else {
         echo json_encode(["status" => "error", "message" => "Data Failed to Change"]);
     }
     exit;
 }
 
-$title = "{$variabel['nama_variabel']}";
+$title = "Tambah Siswa";
 require_once '../../partials/header.php';
 
 ?>
@@ -74,12 +59,11 @@ require_once '../../partials/header.php';
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="<?= base_url('dashboard'); ?>">Home</a></li>
+                                <li class="breadcrumb-item"><a href="../dashboard">Home</a></li>
                                 <li class="breadcrumb-item">Menu</li>
-                                <li class="breadcrumb-item">Master Data</li>
+                                <li class="breadcrumb-item">Fuzzy Sugeno</li>
                                 <li class="breadcrumb-item">Variabel</li>
-                                <li class="breadcrumb-item">Edit</li>
-                                <li class="breadcrumb-item"><?= $title; ?></li>
+                                <li class="breadcrumb-item"><?= $title;  ?></li>
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -88,33 +72,36 @@ require_once '../../partials/header.php';
             <!-- /.content-header -->
 
             <!-- Main content -->
-            <div class="content">
+            <section class="content">
                 <div class="container-fluid">
                     <div class="row">
                         <!-- left column -->
                         <div class="col-md-12">
                             <!-- jquery validation -->
-                            <div class="card card-primary">
+                            <div class="card card-danger">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fas fa-edit"></i>&nbsp;EDIT - <?= $variabel["nama_variabel"];  ?></h3>
+                                    <h3 class="card-title"><i class="fas fa-edit"></i>&nbsp; <?= $title;  ?></h3>
                                 </div>
                                 <!-- /.card-header -->
                                 <!-- form start -->
                                 <form method="POST" action="" id="quickForm">
-                                    <input type="hidden" id="id_variabel" name="id_variabel" value="<?= htmlspecialchars($variabel["id_variabel"]); ?>">
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
+                                                    <label for="id_variabel">ID Variabel:</label>
+                                                    <input type="number" name="id_variabel" class="form-control" id="id_variabel" placeholder="ID Variabel" value="<?= $next_id ?>" readonly>
+                                                </div>
+                                                <div class="form-group">
                                                     <label for="nama_variabel">Nama Variabel:</label>
-                                                    <input type="text" name="nama_variabel" class="form-control" id="nama_variabel" placeholder="Nama Variabel" value="<?= htmlspecialchars($variabel['nama_variabel']); ?>">
+                                                    <input type="text" name="nama_variabel" class="form-control" id="nama_variabel" placeholder="Nama Variabel">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.card-body -->
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-primary"><i class="fas fa-solid fa-check"></i> Submit</button>
+                                        <button type="submit" class="btn btn-danger"><i class="fas fa-solid fa-check"></i> Submit</button>
                                         <button type="reset" class="btn btn-dark"> Reset</button>
                                     </div>
                                 </form>
@@ -129,7 +116,7 @@ require_once '../../partials/header.php';
                         <!--/.col (right) -->
                     </div>
                 </div><!-- /.container-fluid -->
-            </div>
+            </section>
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
@@ -144,14 +131,25 @@ require_once '../../partials/header.php';
 
     <script>
         $(function() {
+            bsCustomFileInput.init();
+        });
+    </script>
+    <script>
+        $(function() {
             // Inisialisasi validasi jQuery
             $('#quickForm').validate({
                 rules: {
+                    id_variabel: {
+                        required: true
+                    },
                     nama_variabel: {
                         required: true
                     }
                 },
                 messages: {
+                    id_variabel: {
+                        required: "Please enter an ID Variabel"
+                    },
                     nama_variabel: {
                         required: "Please enter an Nama Variabel"
                     },
@@ -173,7 +171,7 @@ require_once '../../partials/header.php';
             $('#quickForm').on('submit', function(e) {
                 e.preventDefault();
 
-                if (!$(this).valid()) return; // Stop jika form tidak valid
+                if (!$(this).valid()) return;
 
                 // 🔥 MUNCULKAN OVERLAY LANGSUNG
                 $('#pageLoader').show();
@@ -185,23 +183,38 @@ require_once '../../partials/header.php';
                     data: new FormData(this),
                     processData: false,
                     contentType: false,
-                    dataType: 'json', // 🔥 PENTING
-                    success: function(res) {
+
+                    success: function(response) {
+
                         $('#pageLoader').hide();
                         $('button[type="submit"]').prop('disabled', false);
 
+                        let res;
+                        try {
+                            res = JSON.parse(response);
+                        } catch (e) {
+                            Swal.fire('Error', 'Invalid Server Response', 'error');
+                            return;
+                        }
+
                         if (res.status === 'success') {
-                            Swal.fire('Success', res.message, 'success')
-                                .then(() => window.location.href = '<?= base_url('master_data/variabel') ?>');
+                            Swal.fire({
+                                title: "Success",
+                                text: res.message,
+                                icon: "success"
+                            }).then(() => {
+                                window.location.href = '<?= base_url('fuzzy_sugeno/variabel') ?>';
+                            });
                         } else {
                             Swal.fire('Error', res.message, 'error');
                         }
                     },
-                    error: function(xhr) {
+
+                    error: function() {
                         $('#pageLoader').hide();
                         $('button[type="submit"]').prop('disabled', false);
-                        console.log(xhr.responseText); // 🔥 DEBUG
-                        Swal.fire('Error', 'Server Error', 'error');
+
+                        Swal.fire('Error', 'An Error Occurred on the Server', 'error');
                     }
                 });
             });
