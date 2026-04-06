@@ -121,13 +121,13 @@ $user = query("SELECT * FROM users WHERE id = $id")[0];
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?= base_url('profile') ?>" class="nav-link">
+                            <a href="<?= base_url('account/profile') ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Profile</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?= base_url('change_password') ?>" class="nav-link">
+                            <a href="<?= base_url('account/change_password') ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Change Password</p>
                             </a>

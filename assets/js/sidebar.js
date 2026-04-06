@@ -11,12 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
         { selector: 'a[href*="himpunan_fuzzy"]', path: 'himpunan_fuzzy' },
          { selector: 'a[href*="rule_fuzzy"]', path: 'rule_fuzzy' },
         { selector: 'a[href*="hasil_analisa"]', path: 'hasil_analisa' },
-        { selector: 'a[href*="color_type"]', path: 'color_type' },
-        { selector: 'a[href*="member_bank"]', path: 'member_bank' },
         { selector: 'a[href*="profile"]', path: 'profile' },
-        { selector: 'a[href*="all_data"]', path: 'all_data' },
-         { selector: 'a[href*="all_data_return"]', path: 'all_data_return' },
-        { selector: 'a[href*="change_password"]', path: 'change_password' },
+         { selector: 'a[href*="change_password"]', path: 'change_password' },
         { selector: 'a[href*="user_management"]', path: 'user_management' },
         { selector: 'a[href*="user_management"]', path: 'add_user' },
         { selector: 'a[href*="dashboard"]', path: 'dashboard' }

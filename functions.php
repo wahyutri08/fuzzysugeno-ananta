@@ -711,14 +711,13 @@ function editProfile($data)
     $id = ($data["id"]);
     $name = ucfirst(stripcslashes($data["name"]));
     $email = strtolower(stripslashes($data["email"]));
-    $no_telfon = htmlspecialchars($data["no_telfon"]);
     $avatarLama = htmlspecialchars($data["avatarLama"]);
 
     // Cek apakah user pilih avatar baru atau tidak
     if ($_FILES['avatar']['error'] === 4) {
         $avatar = $avatarLama;
     } else {
-        $avatar = upload();
+        $avatar = uploadPhotoProfile();
         if ($avatar === -1) {
             // Kesalahan Jika Bukan Gambar
             return -1;
@@ -731,7 +730,6 @@ function editProfile($data)
     $query = "UPDATE users SET 
         name = '$name',  
         email = '$email',
-        no_telfon = '$no_telfon',
         avatar = '$avatar' WHERE id = $id";
     mysqli_query($db, $query);
 
@@ -791,6 +789,41 @@ function upload()
 
     return $namaFileBaru;
 }
+
+function uploadPhotoProfile()
+{
+
+    $namaFile = $_FILES['avatar']['name'];
+    $ukuranFiles = $_FILES['avatar']['size'];
+    $error = $_FILES['avatar']['error'];
+    $tmpName = $_FILES['avatar']['tmp_name'];
+
+    // Cek apakah yang diupload adalah gambar
+    $ekstensiAvatarValid = ['', 'jpg', 'jpeg', 'png'];
+    $ekstensiAvatar = explode('.', $namaFile);
+    $ekstensiAvatar = strtolower(end($ekstensiAvatar));
+    if (!in_array($ekstensiAvatar, $ekstensiAvatarValid)) {
+        // Jika Avatar Bukan Gambar
+        return -1;
+    }
+
+    if ($ukuranFiles > 10000000) {
+        // Cek jika ukuran terlalu besar
+        return -2;
+    }
+
+    // Gambar Siap Upload
+    // generate nama gambar baru
+
+    $namaFileBaru = uniqid();
+    $namaFileBaru .= '.';
+    $namaFileBaru .= $ekstensiAvatar;
+
+    move_uploaded_file($tmpName, '../../assets/dist/img/profile/' . $namaFileBaru);
+
+    return $namaFileBaru;
+}
+
 
 function addSiswa($data)
 {

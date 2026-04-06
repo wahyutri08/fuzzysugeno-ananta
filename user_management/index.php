@@ -108,7 +108,7 @@ require_once '../partials/header.php';
                                                     <?php if (htmlspecialchars($row["role"]) === "Admin") : ?>
                                                         <td class="text-center"><span class="badge bg-primary">Admin</span></td>
                                                     <?php else : ?>
-                                                        <td class="text-center"><span class="badge bg-warning">User</span></td>
+                                                        <td class="text-center"><span class="badge bg-warning">Staff</span></td>
                                                     <?php endif; ?>
                                                     <td class="text-center">
                                                         <div class="dropdown">

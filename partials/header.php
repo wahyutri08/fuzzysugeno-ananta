@@ -16,7 +16,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="<?= base_url('assets/plugins/fontawesome-free/css/all.min.css') ?>">
     <!-- icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/dist/img/Yokke.png') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/dist/img/logo2.png') ?>">
     <!-- DataTables -->
     <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') ?>">
