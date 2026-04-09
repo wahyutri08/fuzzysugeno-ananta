@@ -23,15 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result > 0) {
         echo json_encode(["status" => "success", "message" => "Data Added Successfully"]);
     } elseif ($result == -1) {
-        echo json_encode(["status" => "error", "message" => "Product Name Already Exists"]);
-    } elseif ($result == -2) {
-        echo json_encode(["status" => "error", "message" => "SN SIMCARD Already Exists"]);
-    } elseif ($result == -3) {
-        echo json_encode(["status" => "error", "message" => "SN SAMCARD 1 Already Exists"]);
-    } elseif ($result == -4) {
-        echo json_encode(["status" => "error", "message" => "SN SAMCARD 2 Already Exists"]);
-    } elseif ($result == -5) {
-        echo json_encode(["status" => "error", "message" => "SN SAMCARD 3 Already Exists"]);
+        echo json_encode(["status" => "error", "message" => "NIS Sudah Ada Sebelumnya"]);
     } else {
         echo json_encode(["status" => "error", "message" => "Data Failed to Change"]);
     }
@@ -99,22 +91,46 @@ require_once '../../partials/header.php';
                                                     <input type="number" name="id_siswa" class="form-control" id="id_siswa" placeholder="ID Siswa" value="<?= $next_id ?>" readonly>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="nis">NIS:</label>
+                                                    <label for="nis">NIS: <span class="text-danger">*</span></label>
                                                     <input type="number" name="nis" class="form-control" id="nis" placeholder="NIS">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="nama_siswa">Nama Siswa:</label>
+                                                    <label for="nama_siswa">Nama Siswa: <span class="text-danger">*</span></label>
                                                     <input type="text" name="nama_siswa" class="form-control" id="nama_siswa" placeholder="Nama Siswa">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="kelas">Kelas:</label>
+                                                    <label for="kelas">Kelas: <span class="text-danger">*</span></label>
                                                     <input type="text" name="kelas" class="form-control" id="kelas" placeholder="Kelas">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="alamat">Alamat: <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="alamat" name="alamat" rows="3"></textarea>
                                                 </div>
                                             </div>
                                             <div class=" col-md-6">
                                                 <div class="form-group">
-                                                    <label for="alamat">Alamat:</label>
-                                                    <textarea class="form-control" id="alamat" name="alamat" rows="3"></textarea>
+                                                    <label for="tanggal_lahir">Tanggal Lahir <span class="text-danger">*</span></label>
+                                                    <input type="date" class="form-control" name="tanggal_lahir" id="tanggal_lahir" placeholder="Tanggal Lahir" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Jenis Kelamin <span class="text-danger">*</span></label>
+                                                    <br>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="jenis_kelamin" id="Laki-Laki" value="Laki-Laki">
+                                                        <label class="form-check-label" for="Laki-Laki">Laki-laki</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="jenis_kelamin" id="Perempuan" value="Perempuan">
+                                                        <label class="form-check-label" for="Perempuan">Perempuan</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="no_telfon">No Telepon <span class="text-danger">*</span></label>
+                                                    <input type="number" class="form-control" name="no_telfon" id="no_telfon" placeholder="No Telepon" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -170,6 +186,18 @@ require_once '../../partials/header.php';
                     },
                     alamat: {
                         required: true
+                    },
+                    tanggal_lahir: {
+                        required: true
+                    },
+                    jenis_kelamin: {
+                        required: true
+                    },
+                    no_telfon: {
+                        required: true
+                    },
+                    email: {
+                        required: true
                     }
                 },
                 messages: {
@@ -184,6 +212,18 @@ require_once '../../partials/header.php';
                     },
                     alamat: {
                         required: "Please enter an Alamat"
+                    },
+                    tanggal_lahir: {
+                        required: "Please enter an Tanggal Lahir"
+                    },
+                    jenis_kelamin: {
+                        required: "Please enter an Jenis Kelamin"
+                    },
+                    no_telfon: {
+                        required: "Please enter an No Telefon"
+                    },
+                    email: {
+                        required: "Please enter an Email"
                     },
                 },
                 errorElement: 'span',

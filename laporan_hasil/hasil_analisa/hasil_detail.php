@@ -21,7 +21,7 @@ if (isset($_GET["id_hasil"]) && is_numeric($_GET["id_hasil"])) {
 }
 // hasil utama
 $dataHasil = query("
-    SELECT h.*, s.nama_siswa,s.nis, s.kelas, s.alamat 
+    SELECT h.*, s.nama_siswa,s.nis, s.kelas, s.alamat, s.tanggal_lahir, s.jenis_kelamin, s.no_telfon, s.email 
     FROM hasil h
     JOIN siswa s ON h.id_siswa = s.id_siswa
     WHERE h.id_hasil = $id_hasil
@@ -113,6 +113,22 @@ require_once '../../partials/header.php';
                                             <tr>
                                                 <th>Alamat</th>
                                                 <td><?= htmlspecialchars($dataHasil['alamat']); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tanggal Lahir</th>
+                                                <td><?= htmlspecialchars($dataHasil['tanggal_lahir']); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Jenis Kelamin</th>
+                                                <td><?= htmlspecialchars($dataHasil['jenis_kelamin']); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>No Telefon</th>
+                                                <td><?= htmlspecialchars($dataHasil['no_telfon']); ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email</th>
+                                                <td><?= htmlspecialchars($dataHasil['email']); ?></td>
                                             </tr>
                                             <tr>
                                                 <th>Nilai Fuzzy</th>

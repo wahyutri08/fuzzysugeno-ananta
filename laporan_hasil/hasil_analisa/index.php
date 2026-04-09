@@ -298,53 +298,51 @@ require_once '../../partials/header.php';
     <script>
         $(document).on('click', '.tombol-hapus', function(e) {
             e.preventDefault();
-            const id_stock = $(this).data('id');
+
+            let id = $(this).data('id');
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "Data will be deleted",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
+
                     $.ajax({
-                        url: "<?= base_url('all_data/delete') ?>",
-                        type: "POST",
+                        url: '<?= base_url('laporan_hasil/hasil_analisa/delete') ?>',
+                        type: 'POST',
                         data: {
-                            id_stock: id_stock
+                            id_hasil: id
                         },
-                        dataType: "json", // 🔥 penting
+
                         beforeSend: function() {
                             $('#pageLoader').show();
                         },
-                        success: function(res) {
-                            if (res.status === 'success') {
 
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Data Successfully Deleted',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();
-                                });
+                        complete: function() {
+                            $('#pageLoader').hide();
+                        },
+
+                        success: function(res) {
+
+                            if (res.status === 'success') {
+                                Swal.fire('Deleted!', res.message, 'success')
+                                    .then(() => location.reload());
+                            } else if (res.status === 'redirect') {
+                                window.location.href = '../login';
                             } else {
                                 Swal.fire('Error', res.message, 'error');
                             }
                         },
-                        complete: function() {
-                            $('#pageLoader').hide(); // 🔥 pasti hilang
-                        },
+
                         error: function(xhr) {
                             console.log(xhr.responseText);
-                            Swal.fire(
-                                'Server Error',
-                                'Check console for error',
-                                'error'
-                            );
+                            Swal.fire('Error', 'Server Error', 'error');
                         }
                     });
+
                 }
             });
         });

@@ -38,11 +38,11 @@ $siswa = $siswa[0];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = editSiswa($_POST);
     if ($result > 0) {
-        echo json_encode(["status" => "success", "message" => "Data Berhasil Diubah"]);
+        echo json_encode(["status" => "success", "message" => "Data Successfully Changed"]);
     } elseif ($result == -1) {
-        echo json_encode(["status" => "error", "message" => "NIS Sudah Ada Sebelumnya"]);
+        echo json_encode(["status" => "error", "message" => "NIS Already Existed"]);
     } else {
-        echo json_encode(["status" => "error", "message" => "Data Gagal Diubah"]);
+        echo json_encode(["status" => "error", "message" => "Data Failed to Change"]);
     }
     exit;
 }
@@ -94,7 +94,7 @@ require_once '../../partials/header.php';
                         <!-- left column -->
                         <div class="col-md-12">
                             <!-- jquery validation -->
-                            <div class="card card-primary">
+                            <div class="card card-danger">
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fas fa-edit"></i>&nbsp; <?= $siswa["nama_siswa"];  ?></h3>
                                 </div>
@@ -106,29 +106,53 @@ require_once '../../partials/header.php';
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="nis">NIS:</label>
+                                                    <label for="nis">NIS: <span class="text-danger">*</span></label>
                                                     <input type="text" name="nis" class="form-control" id="nis" placeholder="nis" value="<?= htmlspecialchars($siswa['nis']); ?>">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="nama_siswa">Nama Siswa:</label>
+                                                    <label for="nama_siswa">Nama Siswa: <span class="text-danger">*</span></label>
                                                     <input type="text" name="nama_siswa" class="form-control" id="nama_siswa" placeholder="Nama Siswa" value="<?= htmlspecialchars($siswa['nama_siswa']); ?>">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="kelas">Kelas:</label>
+                                                    <label for="kelas">Kelas: <span class="text-danger">*</span></label>
                                                     <input type="text" name="kelas" class="form-control" id="kelas" placeholder="Kelas" value="<?= htmlspecialchars($siswa['kelas']); ?>">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="alamat">Alamat: <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="alamat" name="alamat" rows="3"><?= htmlspecialchars($siswa["alamat"] ?? '') ?></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="alamat">Alamat:</label>
-                                                    <textarea class="form-control" id="alamat" name="alamat" rows="3"><?= htmlspecialchars($siswa["alamat"] ?? '') ?></textarea>
+                                                    <label for="tanggal_lahir">Tanggal Lahir <span class="text-danger">*</span></label>
+                                                    <input type="date" class="form-control" name="tanggal_lahir" id="tanggal_lahir" placeholder="Tanggal Lahir" value="<?= htmlspecialchars($siswa["tanggal_lahir"] ?? '') ?>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Jenis Kelamin <span class="text-danger">*</span></label>
+                                                    <br>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="jenis_kelamin" id="LAKI-LAKI" value="LAKI-LAKI" <?= htmlspecialchars($siswa["jenis_kelamin"]) == 'LAKI-LAKI' ? 'checked' : ''; ?>>
+                                                        <label class="form-check-label" for="LAKI-LAKI">LAKI-LAKI</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="jenis_kelamin" id="PEREMPUAN" value="PEREMPUAN" <?= htmlspecialchars($siswa["jenis_kelamin"]) == 'PEREMPUAN' ? 'checked' : ''; ?>>
+                                                        <label class="form-check-label" for="PEREMPUAN">PEREMPUAN</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="no_telfon">No Telepon <span class="text-danger">*</span></label>
+                                                    <input type="number" class="form-control" name="no_telfon" id="no_telfon" placeholder="No Telepon" value="<?= htmlspecialchars($siswa["no_telfon"]) ?>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="<?= htmlspecialchars($siswa["email"]) ?>" required>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.card-body -->
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-primary"><i class="fas fa-solid fa-check"></i> Submit</button>
+                                        <button type="submit" class="btn btn-danger"><i class="fas fa-solid fa-check"></i> Submit</button>
                                         <button type="reset" class="btn btn-dark"> Reset</button>
                                     </div>
                                 </form>
@@ -172,6 +196,18 @@ require_once '../../partials/header.php';
                     },
                     alamat: {
                         required: true
+                    },
+                    tanggal_lahir: {
+                        required: true
+                    },
+                    jenis_kelamin: {
+                        required: true
+                    },
+                    no_telfon: {
+                        required: true
+                    },
+                    email: {
+                        required: true
                     }
                 },
                 messages: {
@@ -186,6 +222,18 @@ require_once '../../partials/header.php';
                     },
                     alamat: {
                         required: "Please enter an Alamat"
+                    },
+                    tanggal_lahir: {
+                        required: "Please enter an Tanggal Lahir"
+                    },
+                    jenis_kelamin: {
+                        required: "Please enter an Jenis Kelamin"
+                    },
+                    no_telfon: {
+                        required: "Please enter an No Telefon"
+                    },
+                    email: {
+                        required: "Please enter an Email"
                     },
                 },
                 errorElement: 'span',

@@ -72,19 +72,23 @@ require_once '../../partials/header.php';
                                 <div class="card-body table-responsive">
                                     <table id="example1" class="table table-bordered table-hover">
                                         <thead>
-                                            <tr>
-                                                <th class="text-center" style="width: 8px;">
+                                            <tr class="text-center">
+                                                <th style="width: 8px;">
                                                     <div class="custom-control custom-checkbox">
                                                         <input class="custom-control-input custom-control-input-danger"
                                                             type="checkbox" id="checkAll">
                                                         <label for="checkAll" class="custom-control-label"></label>
                                                     </div>
                                                 </th>
-                                                <th class="text-center">NIS</th>
-                                                <th class="text-center">Nama Siswa</th>
-                                                <th class="text-center">Kelas</th>
-                                                <th class="text-center">Alamat</th>
-                                                <th class="text-center">Action</th>
+                                                <th>NIS</th>
+                                                <th>Nama Siswa</th>
+                                                <th>Kelas</th>
+                                                <th>Alamat</th>
+                                                <th>Tanggal Lahir</th>
+                                                <th>Jenis Kelamin</th>
+                                                <th>No Telepon</th>
+                                                <th>Email</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -103,6 +107,10 @@ require_once '../../partials/header.php';
                                                     <td class="text-center"><?= htmlspecialchars($row['nama_siswa']); ?></td>
                                                     <td class="text-center"><?= htmlspecialchars($row['kelas']); ?></td>
                                                     <td class="text-center"><?= htmlspecialchars($row['alamat']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['tanggal_lahir']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['jenis_kelamin']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['no_telfon']); ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($row['email']); ?></td>
                                                     <td class="text-center">
                                                         <div class="dropdown">
                                                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">

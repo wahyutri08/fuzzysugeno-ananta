@@ -46,7 +46,7 @@ require_once '../partials/header.php';
 
 ?>
 
-<body class="hold-transition login-page" style="background-position: center; background-size: cover; background-image: url('../assets/dist/img/bg.png');">
+<body class="hold-transition login-page" style="background-position: center; background-size: cover; background-image: url('../assets/dist/img/bg.jpg');">
     <div class="login-box">
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
